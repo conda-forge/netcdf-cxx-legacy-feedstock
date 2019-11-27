@@ -1,4 +1,12 @@
 {% set version = "4.2" %}
+{% set build = 1 %}
+
+# recipe-lint fails if mpi is undefined
+{% set mpi = mpi or 'nompi' %}
+{% if mpi == "nompi" %}
+# prioritize nompi via build number
+{% set build = build + 100 %}
+{% endif %}
 
 package:
   name: netcdf-cxx-legacy
@@ -9,22 +17,43 @@ source:
   sha256: 95ed6ab49a0ee001255eac4e44aacb5ca4ea96ba850c08337a3e4c9a0872ccd1
   patches:
     # remove VERSION file that is problematic in OSX
-    - configure.patch
+    - 0001-configure.patch
+    - 0002-remove-error-check-in-configure.patch
 
 build:
-  number: 0
+  number: {{ build }}
   skip: True  # [win]
+
+  # add build string so packages can depend on
+  # mpi or nompi variants explicitly:
+  # `netcdf-cxx-legacy * mpi_mpich_*` for mpich
+  # `netcdf-cxx-legacy * mpi_*` for any mpi
+  # `netcdf-cxx-legacy * nompi_*` for no mpi
+
+  {% if mpi != 'nompi' %}
+  {% set mpi_prefix = "mpi_" + mpi %}
+  {% else %}
+  {% set mpi_prefix = "nompi" %}
+  {% endif %}
+  string: "{{ mpi_prefix }}_h{{ PKG_HASH }}_{{ build }}"
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - libnetcdf
+    # need to list hdf5 and libnetcdf twice to get version pinning from
+    # conda_build_config and build pinning from {{ mpi_prefix }}
     - hdf5
+    - hdf5 * {{ mpi_prefix }}_*
+    - libnetcdf
+    - libnetcdf * {{ mpi_prefix }}_*
+    - {{ mpi }}  # [mpi != 'nompi']
   run:
-    - libnetcdf
-    - hdf5
+    - hdf5 * {{ mpi_prefix }}_*
+    - libnetcdf * {{ mpi_prefix }}_*
+    - {{ mpi }}  # [mpi != 'nompi']
+    - openssh  # [mpi == 'openmpi']
   run_constrained:
     - netcdf-cxx4 >=9999
 
