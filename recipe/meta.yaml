@@ -1,6 +1,6 @@
 {% set name = "netcdf-cxx-legacy" %}
 {% set version = "4.2" %}
-{% set build = 8 %}
+{% set build = 9 %}
 
 # recipe-lint fails if mpi is undefined
 {% set mpi = mpi or 'nompi' %}
@@ -14,7 +14,7 @@ package:
   version: {{ version }}
 
 source:
-  url: https://www.unidata.ucar.edu/downloads/netcdf/ftp/netcdf-cxx-{{ version }}.tar.gz
+  url: https://downloads.unidata.ucar.edu/netcdf-cxx/{{ version }}/netcdf-cxx-{{ version }}.tar.gz
   sha256: 95ed6ab49a0ee001255eac4e44aacb5ca4ea96ba850c08337a3e4c9a0872ccd1
   patches:
     # remove VERSION file that is problematic in OSX
@@ -47,6 +47,7 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - make
   host:
     # need to list hdf5 and libnetcdf twice to get version pinning from
     # conda_build_config and build pinning from {{ mpi_prefix }}
