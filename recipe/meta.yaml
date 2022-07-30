@@ -47,6 +47,7 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - make
   host:
     # need to list hdf5 and libnetcdf twice to get version pinning from
     # conda_build_config and build pinning from {{ mpi_prefix }}
