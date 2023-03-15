@@ -1,11 +1,11 @@
-About netcdf-cxx-legacy
-=======================
+About netcdf-cxx-legacy-feedstock
+=================================
+
+Feedstock license: [BSD-3-Clause](https://github.com/conda-forge/netcdf-cxx-legacy-feedstock/blob/main/LICENSE.txt)
 
 Home: https://www.unidata.ucar.edu/downloads/netcdf/
 
 Package license: http://www.unidata.ucar.edu/software/netcdf/copyright.html
-
-Feedstock license: [BSD-3-Clause](https://github.com/conda-forge/netcdf-cxx-legacy-feedstock/blob/main/LICENSE.txt)
 
 Summary: Legacy Unidata NetCDF C++ Library
 
