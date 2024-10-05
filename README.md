@@ -5,7 +5,7 @@ Feedstock license: [BSD-3-Clause](https://github.com/conda-forge/netcdf-cxx-lega
 
 Home: https://www.unidata.ucar.edu/downloads/netcdf/
 
-Package license: http://www.unidata.ucar.edu/software/netcdf/copyright.html
+Package license: NetCDF
 
 Summary: Legacy Unidata NetCDF C++ Library
 
