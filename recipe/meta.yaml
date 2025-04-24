@@ -1,6 +1,6 @@
 {% set name = "netcdf-cxx-legacy" %}
 {% set version = "4.2" %}
-{% set build = 17 %}
+{% set build = 18 %}
 
 # recipe-lint fails if mpi is undefined
 {% set mpi = mpi or 'nompi' %}
