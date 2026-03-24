@@ -1,0 +1,84 @@
+schema_version: 1
+
+context:
+  name: netcdf-cxx-legacy
+  version: "4.2"
+  build: 21
+  # recipe-lint fails if mpi is undefined
+  mpi: ${{ mpi or "nompi" }}
+  # prioritize nompi via build number
+  build_number: ${{ build + 100 if mpi == "nompi" else build }}
+  mpi_prefix: ${{ "mpi_" + mpi if mpi != "nompi" else "nompi" }}
+
+package:
+  name: ${{ name }}
+  version: ${{ version }}
+
+source:
+  url: https://downloads.unidata.ucar.edu/netcdf-cxx/${{ version }}/netcdf-cxx-${{ version }}.tar.gz
+  sha256: 95ed6ab49a0ee001255eac4e44aacb5ca4ea96ba850c08337a3e4c9a0872ccd1
+  patches:
+    # remove VERSION file that is problematic in OSX
+    - 0001-configure.patch
+    - 0002-remove-error-check-in-configure.patch
+
+build:
+  number: ${{ build_number }}
+  skip: win
+
+  # add build string so packages can depend on
+  # mpi or nompi variants explicitly:
+  # `netcdf-cxx-legacy * mpi_mpich_*` for mpich
+  # `netcdf-cxx-legacy * mpi_*` for any mpi
+  # `netcdf-cxx-legacy * nompi_*` for no mpi
+  string: ${{ mpi_prefix }}_h${{ hash }}_${{ build_number }}
+  script: bash build.sh
+
+requirements:
+  build:
+    - if: mpi != "nompi" and build_platform != target_platform
+      then: ${{ mpi }}
+    - ${{ compiler('c') }}
+    - ${{ stdlib("c") }}
+    - ${{ compiler('cxx') }}
+    - make
+  host:
+    # need to list hdf5 and libnetcdf twice to get version pinning from
+    # conda_build_config and build pinning from ${{ mpi_prefix }}
+    - hdf5
+    - hdf5 * ${{ mpi_prefix }}_*
+    - libnetcdf
+    - libnetcdf * ${{ mpi_prefix }}_*
+    - if: mpi != "nompi"
+      then: ${{ mpi }}
+  run:
+    - hdf5 * ${{ mpi_prefix }}_*
+    - libnetcdf * ${{ mpi_prefix }}_*
+    - if: mpi != "nompi"
+      then: ${{ mpi }}
+    - if: mpi == "openmpi"
+      then: openssh
+  run_constraints:
+    - netcdf-cxx4 >=9999
+  run_exports:
+    - if: mpi != "nompi"
+      then:
+        - ${{ name }} * ${{ mpi_prefix }}_*
+
+tests:
+  - script:
+      - test -f ${PREFIX}/lib/libnetcdf_c++.a
+      - test -f ${PREFIX}/lib/libnetcdf_c++${SHLIB_EXT}
+      - test -f ${PREFIX}/include/ncvalues.h
+      - test -f ${PREFIX}/include/netcdfcpp.h
+      - test -f ${PREFIX}/include/netcdf.hh
+
+about:
+  homepage: https://www.unidata.ucar.edu/downloads/netcdf/
+  license: NetCDF
+  license_file: COPYRIGHT
+  summary: Legacy Unidata NetCDF C++ Library
+
+extra:
+  recipe-maintainers:
+    - xylar
