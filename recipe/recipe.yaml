@@ -32,11 +32,10 @@ build:
   # `netcdf-cxx-legacy * mpi_*` for any mpi
   # `netcdf-cxx-legacy * nompi_*` for no mpi
   string: ${{ mpi_prefix }}_h${{ hash }}_${{ build_number }}
-  script: bash build.sh
 
 requirements:
   build:
-    - if: mpi != "nompi" and build_platform != target_platform
+    - if: mpi != "nompi"
       then: ${{ mpi }}
     - ${{ compiler('c') }}
     - ${{ stdlib("c") }}
