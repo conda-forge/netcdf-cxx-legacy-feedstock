@@ -2,7 +2,7 @@
 
 set -ex
 
-cd "${SRC_DIR}/netcdf-cxx-${PKG_VERSION}"
+cd "${SRC_DIR}"
 
 if [[ -n "$mpi" && "$mpi" != "nompi" ]]; then
   export CC="${PREFIX}/bin/mpicc"

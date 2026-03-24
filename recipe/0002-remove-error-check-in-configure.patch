@@ -1,5 +1,5 @@
 --- configure	2011-09-30 16:34:31.000000000 +0200
-+++ configure_new	2019-11-27 16:53:29.326587562 +0100
++++ configure	2019-11-27 16:53:29.326587562 +0100
 @@ -7018,7 +7018,7 @@
  	$LTCC $LTCFLAGS $LDFLAGS -o libconftest.dylib \
  	  -dynamiclib -Wl,-single_module conftest.c 2>conftest.err
